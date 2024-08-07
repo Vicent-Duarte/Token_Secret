@@ -1,10 +1,11 @@
 const { getAll, create, getOne, remove, update, login, } = require('../controllers/users.controllers');
 const express = require('express');
+const { verifyJwt } = require('../utils/verifyJWT');
 
 const routerUser = express.Router();
 
 routerUser.route('/')
-    .get(getAll)
+    .get(verifyJwt, getAll)
     .post(create)
 
 routerUser.route('/login') 

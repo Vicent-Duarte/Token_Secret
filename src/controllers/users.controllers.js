@@ -1,6 +1,7 @@
 const catchError = require('../utils/catchError');
 const User = require('../models/users');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const getAll = catchError(async(req, res) => {
     const results = await User.findAll();
@@ -49,7 +50,12 @@ const login = catchError(async(req, res) => {
     if(!user) return res.status(401).json({"message": "Las credenciales ingresadas son incorrectas"})
         const isValid = await bcrypt.compare(password, user.password)
     if(!isValid) return res.status(401).json({"message": "Las credenciales ingresadas son incorrectas"})
-    return res.status(200).json(user);
+    const token = jwt.sign(
+        {user},
+        process.env.TOKEN_SECRET,
+        {expiresIn : '1d'}
+    )
+    return res.status(200).json({user, token});
 });
 
 module.exports = {
